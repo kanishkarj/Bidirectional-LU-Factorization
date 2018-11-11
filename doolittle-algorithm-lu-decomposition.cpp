@@ -83,7 +83,45 @@ void LU_Decomposition(vector<vector<double>>& matrix)
 
     // cout<<"TIME TAKEN : "<<((double)exec_time/CLOCKS_PER_SEC)<<" milliseconds.";
 } 
+void parallel(vector<vector<int>> matrix)
+{
+     int n = matrix.size();
 
+    // The upper matrix
+    vector<vector<int>> lower(n,vector<int>(n,0));
+    // The Lower matrix
+    vector<vector<int>> upper(n,vector<int>(n,0));
+    for(int k=0;k<n;k++)
+    {
+
+      #pragma omp parallel for
+      for(int i=k+1;i<n;i++)
+        matrix[i][k]=matrix[i][k]/matrix[k][k];
+
+      #pragma omp parallel for
+      for(int i=k+1;i<n;i++)
+      {
+
+          for(int j=k+1;j<n;j++)
+          {
+              matrix[i][j]=matrix[i][j]-matrix[i][k]*matrix[k][j];
+          }
+
+      }
+
+    }
+    for(int i=0;i<n;i++)
+    {
+      for(int j=0;j<=i;j++)
+      {
+       lower[i][j]=matrix[i][j];
+       upper[j][i]=matrix[j][i];
+      }
+      lower[i][i]=1;
+    }
+
+ 
+}
 // Driver code 
 int main() 
 { 
