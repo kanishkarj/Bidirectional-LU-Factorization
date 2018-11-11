@@ -13,12 +13,12 @@ void getRandomMatrix(int n,vector<vector<double>> &matrix) {
 
 void LU_Decomposition(vector<vector<double>>& matrix) 
 { 
-    // Matrix Size
+    // SIZE
     int n = matrix.size();
-    
+
     // File 
     ofstream opfile;
-    string filename = "doolittle-";
+    string filename = "parallel-algo1-";
     ostringstream num_stream;
     num_stream << n;
     filename.append(num_stream.str());
@@ -29,15 +29,16 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     vector<vector<double>> lower(n,vector<double>(n,0));
     // The Lower matrix
     vector<vector<double>> upper(n,vector<double>(n,0));
-  
 
     double exec_time = clock();
 
     for(int k=0;k<n;k++)
     {
+        #pragma omp parallel for
         for(int i=k+1;i<n;i++)
             matrix[i][k]=matrix[i][k]/matrix[k][k];
 
+        #pragma omp parallel for
         for(int i=k+1;i<n;i++)
         {
             for(int j=k+1;j<n;j++)
@@ -55,7 +56,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
         }
         lower[i][i]=1;
     }
-    
+
     exec_time = clock() - exec_time;
 
     opfile<<endl;
@@ -113,7 +114,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     } 
 
     cout<<"Data written to "<<filename;
-} 
+}
 
 int main(int argc, char** args) 
 { 
