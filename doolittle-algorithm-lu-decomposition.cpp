@@ -1,17 +1,32 @@
 #include <bits/stdc++.h> 
 
-using namespace std; 
+using namespace std;
 
-void LU_Decomposition(vector<vector<int>> matrix) 
+void getRandomMatrix(int n,vector<vector<double>> &matrix) {
+    srand(0);
+    for (int i=0 ; i<n ; i++) { 
+        for (int j=0 ; j<n ; j++) {
+            matrix[i][j] = rand()%150;
+        }
+    }
+}
+
+void LU_Decomposition(vector<vector<double>>& matrix) 
 { 
+
+    ofstream opfile;
+    opfile.open ("doolittle.txt");
     // Matrix Size
     int n = matrix.size();
 
     // The upper matrix
-    vector<vector<int>> lower(n,vector<int>(n,0));
+    vector<vector<double>> lower(n,vector<double>(n,0));
     // The Lower matrix
-    vector<vector<int>> upper(n,vector<int>(n,0));
+    vector<vector<double>> upper(n,vector<double>(n,0));
   
+
+    double exec_time = clock();
+
     // Decomposing matrix into Upper and Lower 
     // triangular matrix 
     for (int i=0 ; i<n; i++) { 
@@ -20,7 +35,7 @@ void LU_Decomposition(vector<vector<int>> matrix)
         for (int k=i; k<n ; k++) { 
   
             // Summation of L(i, j) * U(j, k) 
-            int sum = 0; 
+            double sum = 0; 
             for (int j=0 ; j<i ; j++) 
                 sum += (lower[i][j] * upper[j][k]); 
   
@@ -35,7 +50,7 @@ void LU_Decomposition(vector<vector<int>> matrix)
             else { 
   
                 // Summation of L(k, j) * U(j, i) 
-                int sum = 0; 
+                double sum = 0; 
                 for (int j=0 ; j<i ; j++) 
                     sum += (lower[k][j] * upper[j][i]); 
   
@@ -44,7 +59,9 @@ void LU_Decomposition(vector<vector<int>> matrix)
             } 
         } 
     } 
-  
+    
+    exec_time = clock() - exec_time;
+
     // Output
     cout<<"Lower Triangular : "<<endl; 
   
@@ -63,18 +80,23 @@ void LU_Decomposition(vector<vector<int>> matrix)
             cout<<upper[i][j]<<"\t"; 
         cout<<endl;  
     } 
+
+    // cout<<"TIME TAKEN : "<<((double)exec_time/CLOCKS_PER_SEC)<<" milliseconds.";
 } 
 
 // Driver code 
 int main() 
 { 
-    vector<vector<int>> matrix = 
-    { 
-        { 2, -1, -2 }, 
-        { -4, 6, 3 }, 
-        { -4, -2, 8 } 
-    }; 
+    int n=(2<<3);
+    vector<vector<double>> matrix(n,vector<double>(n,0));
+    getRandomMatrix(n,matrix);
   
+    for (int i=0 ; i<n ; i++) { 
+        for (int j=0 ; j<n ; j++) 
+            cout<<matrix[i][j]<<"\t"; 
+        cout<<endl;  
+    } 
+
     LU_Decomposition(matrix); 
     return 0; 
 } 
