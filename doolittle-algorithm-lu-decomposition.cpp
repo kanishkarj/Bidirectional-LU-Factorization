@@ -28,11 +28,12 @@ void getRandomMatrix(int n,vector<vector<double>> &matrix) {
 void forward_substitution(int n){
 
         y.resize(n);
-        for (int i=0 ; i<n ; i++) { 
+        for (int i=0 ; i<n ; i++)
         {
             y[i]=b[i];
             for (int j=0 ; j<i ; j++) { 
                 y[i]-=lower[i][j]*y[j];
+              }
         }
 
 }
@@ -55,7 +56,8 @@ void LU_Decomposition(vector<vector<double>>& matrix)
 { 
     // Matrix Size
     int n = matrix.size();
-    
+    vector<vector<double>> temp;
+    temp=matrix;
     // File 
     ofstream opfile;
     string filename = "doolittle-";
@@ -107,6 +109,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
 
     // Output
     opfile<<"Original Matrix : "<<endl;
+    matrix=temp;
     for (int i=0 ; i<n ; i++) { 
         for (int j=0 ; j<n ; j++) 
             opfile<<setw(10)<<fixed<<setprecision(0)<<matrix[i][j]<<"\t";
