@@ -3,7 +3,8 @@
 using namespace std;
 
 vector< double > b,y,x;
-vector<double> sol,lower,upper;
+vector<double> sol;
+vector<vector<double>> lower,upper;
 
 void getRandomMatrix(int n,vector<vector<double>> &matrix) {
     srand(0);
