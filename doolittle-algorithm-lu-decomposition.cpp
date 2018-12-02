@@ -2,6 +2,9 @@
 
 using namespace std;
 
+vector< double > b,y,x;
+vector<double> sol,lower,upper;
+
 void getRandomMatrix(int n,vector<vector<double>> &matrix) {
     srand(0);
     for (int i=0 ; i<n ; i++) { 
@@ -9,6 +12,42 @@ void getRandomMatrix(int n,vector<vector<double>> &matrix) {
             matrix[i][j] = rand()%150;
         }
     }
+    sol.resize(n);
+    for(int i=0 ; i<n ; i++){
+        sol[i]=rand()%20;
+    }
+    b.resize(n);
+    for (int i=0 ; i<n ; i++) { 
+
+        for (int j=0 ; j<n ; j++) {
+            b[i]+=matrix[i][j]*sol[j];
+        }
+    }
+}
+void forward_substitution(int n){
+
+        y.resize(n);
+        for (int i=0 ; i<n ; i++) { 
+        {
+            y[i]=b[i];
+            for (int j=0 ; j<i ; j++) { 
+                y[i]-=lower[i][j]*y[j];
+        }
+
+}
+
+void backward_substitution(int n){
+
+    x.resize(n);
+
+    for(int i=n-1;i>=0;i--)
+        {
+        x[i]=y[i];
+            for(int j=i+1;j<n;j++)
+                x[i]-=upper[i][j]*x[j];
+            x[i]/=upper[i][i];
+        }
+
 }
 
 void LU_Decomposition(vector<vector<double>>& matrix) 
@@ -26,9 +65,9 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     opfile.open(filename);
 
     // The upper matrix
-    vector<vector<double>> lower(n,vector<double>(n,0));
+    upper.resize(n,vector<double>(n,0));
     // The Lower matrix
-    vector<vector<double>> upper(n,vector<double>(n,0));
+    lower.resize(n,vector<double>(n,0));
   
 
     double exec_time = clock();
