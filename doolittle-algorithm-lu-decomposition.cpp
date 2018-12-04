@@ -1,4 +1,5 @@
 #include <bits/stdc++.h> 
+#include <sys/time.h>
 
 using namespace std;
 
@@ -10,7 +11,7 @@ void getRandomMatrix(int n,vector<vector<double>> &matrix) {
     srand(0);
     for (int i=0 ; i<n ; i++) { 
         for (int j=0 ; j<n ; j++) {
-            matrix[i][j] = rand()%150;
+            matrix[i][j] = rand()%199;
         }
     }
     sol.resize(n);
@@ -73,7 +74,8 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     lower.resize(n,vector<double>(n,0));
   
 
-    double exec_time = clock();
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
 
     for(int k=0;k<n;k++)
     {
@@ -98,16 +100,17 @@ void LU_Decomposition(vector<vector<double>>& matrix)
         lower[i][i]=1;
     }
     
-    exec_time = clock() - exec_time;
+    gettimeofday(&end, NULL);
 
     opfile<<endl;
     // Exectution time
-    opfile<<"TIME TAKEN : "<<((double)exec_time/CLOCKS_PER_SEC)<<" milliseconds."<<endl;
+    double time = ((end.tv_sec  - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
+    opfile<<"TIME TAKEN : "<<time<<" seconds."<<endl;
     opfile<<endl;
 
     opfile<<"SIZE OF THE MATRIX "<<n<<" x "<<n<<endl<<endl;
 
-    // Output
+    Output
     opfile<<"Original Matrix : "<<endl;
     matrix=temp;
     for (int i=0 ; i<n ; i++) { 
@@ -163,8 +166,8 @@ int main(int argc, char** args)
     int n = atoi(args[1]);
     // cout<<n;
     vector<vector<double>> matrix(n,vector<double>(n,0));
-    getRandomMatrix(n,matrix);
 
+    getRandomMatrix(n,matrix);
     LU_Decomposition(matrix); 
     
     return 0; 

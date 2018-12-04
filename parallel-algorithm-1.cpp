@@ -1,12 +1,17 @@
 #include <bits/stdc++.h> 
+#include <omp.h>
+#include <ctime>
+#include <ratio>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 void getRandomMatrix(int n,vector<vector<double>> &matrix) {
     srand(0);
     for (int i=0 ; i<n ; i++) { 
         for (int j=0 ; j<n ; j++) {
-            matrix[i][j] = rand()%150;
+            matrix[i][j] = rand()%199;
         }
     }
 }
@@ -18,7 +23,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
 
     // File 
     ofstream opfile;
-    string filename = "parallel-algo1-";
+    string filename = "parallel-algo-";
     ostringstream num_stream;
     num_stream << n;
     filename.append(num_stream.str());
@@ -30,7 +35,20 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     // The Lower matrix
     vector<vector<double>> upper(n,vector<double>(n,0));
 
-    double exec_time = clock();
+
+    opfile<<endl;
+
+    opfile<<"SIZE OF THE MATRIX "<<n<<" x "<<n<<endl<<endl;
+
+    Output
+    opfile<<"Original Matrix : "<<endl;
+    for (int i=0 ; i<n ; i++) { 
+        for (int j=0 ; j<n ; j++) 
+            opfile<<setw(10)<<fixed<<setprecision(0)<<matrix[i][j]<<"\t";
+        opfile<<endl;  
+    }
+    
+    auto start = high_resolution_clock::now();
 
     for(int k=0;k<n;k++)
     {
@@ -56,23 +74,13 @@ void LU_Decomposition(vector<vector<double>>& matrix)
         }
         lower[i][i]=1;
     }
-
-    exec_time = clock() - exec_time;
+    auto end = high_resolution_clock::now();
+    auto time_span = duration_cast<duration<double>>(end - start);
 
     opfile<<endl;
     // Exectution time
-    opfile<<"TIME TAKEN : "<<((double)exec_time/CLOCKS_PER_SEC)<<" milliseconds."<<endl;
-    opfile<<endl;
-
-    opfile<<"SIZE OF THE MATRIX "<<n<<" x "<<n<<endl<<endl;
-
-    // Output
-    opfile<<"Original Matrix : "<<endl;
-    for (int i=0 ; i<n ; i++) { 
-        for (int j=0 ; j<n ; j++) 
-            opfile<<setw(10)<<fixed<<setprecision(0)<<matrix[i][j]<<"\t";
-        opfile<<endl;  
-    }
+    double time = time_span.count();
+    opfile<<"TIME TAKEN : "<<time<<" seconds."<<endl;
 
     opfile<<endl;
     opfile<<"Lower Triangular : "<<endl; 
