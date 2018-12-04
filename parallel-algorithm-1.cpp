@@ -7,6 +7,10 @@
 using namespace std;
 using namespace std::chrono;
 
+vector< double > b,y,x;
+vector<double> sol;
+vector<vector<double>> lower,upper;
+
 void getRandomMatrix(int n,vector<vector<double>> &matrix) {
     srand(0);
     for (int i=0 ; i<n ; i++) { 
@@ -14,16 +18,54 @@ void getRandomMatrix(int n,vector<vector<double>> &matrix) {
             matrix[i][j] = rand()%199;
         }
     }
+    sol.resize(n);
+    for(int i=0 ; i<n ; i++){
+        sol[i]=rand()%20;
+    }
+    b.resize(n);
+    for (int i=0 ; i<n ; i++) { 
+
+        for (int j=0 ; j<n ; j++) {
+            b[i]+=matrix[i][j]*sol[j];
+        }
+    }
+}
+void forward_substitution(int n){
+
+        y.resize(n);
+        for (int i=0 ; i<n ; i++)
+        {
+            y[i]=b[i];
+            for (int j=0 ; j<i ; j++) { 
+                y[i]-=lower[i][j]*y[j];
+              }
+        }
+
+}
+
+void backward_substitution(int n){
+
+    x.resize(n);
+
+    for(int i=n-1;i>=0;i--)
+        {
+        x[i]=y[i];
+            for(int j=i+1;j<n;j++)
+                x[i]-=upper[i][j]*x[j];
+            x[i]/=upper[i][i];
+        }
+
 }
 
 void LU_Decomposition(vector<vector<double>>& matrix) 
 { 
-    // SIZE
+    // Matrix Size
     int n = matrix.size();
-
+    vector<vector<double>> temp;
+    temp=matrix;
     // File 
     ofstream opfile;
-    string filename = "parallel-algo-";
+    string filename = "parallel-";
     ostringstream num_stream;
     num_stream << n;
     filename.append(num_stream.str());
@@ -31,16 +73,15 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     opfile.open(filename);
 
     // The upper matrix
-    vector<vector<double>> lower(n,vector<double>(n,0));
+    upper.resize(n,vector<double>(n,0));
     // The Lower matrix
-    vector<vector<double>> upper(n,vector<double>(n,0));
-
+    lower.resize(n,vector<double>(n,0));
 
     opfile<<endl;
 
     opfile<<"SIZE OF THE MATRIX "<<n<<" x "<<n<<endl<<endl;
 
-    Output
+    // Output
     opfile<<"Original Matrix : "<<endl;
     for (int i=0 ; i<n ; i++) { 
         for (int j=0 ; j<n ; j++) 
@@ -49,7 +90,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
     }
     
     auto start = high_resolution_clock::now();
-
+ 
     for(int k=0;k<n;k++)
     {
         #pragma omp parallel for
@@ -65,8 +106,12 @@ void LU_Decomposition(vector<vector<double>>& matrix)
             }
         }
     }
+
+
+    #pragma omp parallel for
     for(int i=0;i<n;i++)
     {
+        #pragma omp parallel for
         for(int j=0;j<=i;j++)
         {
             lower[i][j]=matrix[i][j];
@@ -74,6 +119,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
         }
         lower[i][i]=1;
     }
+    
     auto end = high_resolution_clock::now();
     auto time_span = duration_cast<duration<double>>(end - start);
 
@@ -84,6 +130,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
 
     opfile<<endl;
     opfile<<"Lower Triangular : "<<endl; 
+  
   
     for (int i=0 ; i<n ; i++) { 
         for (int j=0 ; j<n ; j++) 
@@ -120,6 +167,21 @@ void LU_Decomposition(vector<vector<double>>& matrix)
             opfile<<setw(10)<<fixed<<setprecision(0)<<matrix[i][j]<<"\t"; 
         opfile<<endl;  
     } 
+
+    forward_substitution(n);
+    backward_substitution(n);
+
+    opfile<<"For B = : ";
+    opfile<<endl;
+    for (int j=0 ; j<b.size() ; j++) 
+        opfile<<setw(10)<<fixed<<setprecision(0)<<b[j]<<"\t"; 
+    opfile<<endl;
+
+    opfile<<"X = : ";
+    opfile<<endl;
+    for (int j=0 ; j<x.size() ; j++) 
+        opfile<<setw(10)<<fixed<<setprecision(0)<<x[j]<<"\t"; 
+    opfile<<endl;
 
     cout<<"Data written to "<<filename;
 }

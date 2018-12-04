@@ -110,7 +110,7 @@ void LU_Decomposition(vector<vector<double>>& matrix)
 
     opfile<<"SIZE OF THE MATRIX "<<n<<" x "<<n<<endl<<endl;
 
-    Output
+    // Output
     opfile<<"Original Matrix : "<<endl;
     matrix=temp;
     for (int i=0 ; i<n ; i++) { 
@@ -157,6 +157,21 @@ void LU_Decomposition(vector<vector<double>>& matrix)
             opfile<<setw(10)<<fixed<<setprecision(0)<<matrix[i][j]<<"\t"; 
         opfile<<endl;  
     } 
+
+    forward_substitution(n);
+    backward_substitution(n);
+
+    opfile<<"For B = : ";
+    opfile<<endl;
+    for (int j=0 ; j<b.size() ; j++) 
+        opfile<<setw(10)<<fixed<<setprecision(0)<<b[j]<<"\t"; 
+    opfile<<endl;
+
+    opfile<<"X = : ";
+    opfile<<endl;
+    for (int j=0 ; j<x.size() ; j++) 
+        opfile<<setw(10)<<fixed<<setprecision(0)<<x[j]<<"\t"; 
+    opfile<<endl;
 
     cout<<"Data written to "<<filename;
 } 
